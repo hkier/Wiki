@@ -1,0 +1,21 @@
+{
+  "name": "wiki",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -e html,js,css app.js" },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "chalk": "^2.0.1",
+    "express": "^4.15.3",
+    "morgan": "^1.8.2",
+    "nunjucks": "^3.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
