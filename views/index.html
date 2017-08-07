@@ -3,9 +3,10 @@
 {% block content %}
   <h3>Pages</h3>
   <hr>
+  <h4>"This is page of {{ userName }}"</h4>
   <ul class="list-unstyled">
-  {% for page in pages %}
-    <li><a href="{{page.urlTitle}}">{{page.title}}</a></li>
-  {% endfor %}
+    {% for page in pages %}
+      <li><a href="{{page.urlTitle}}">{{page.title}}</a></li>
+    {% endfor %}
   </ul>
 {% endblock %}

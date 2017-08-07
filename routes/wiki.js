@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var models = require('../models');
-var Page = models.Page; 
+var Page = models.Page;
 var User = models.User;
 
 router.get('/', function(req, res, next){
@@ -16,24 +16,32 @@ router.get('/', function(req, res, next){
 });
 
 router.post('/', function(req, res, next){
-    // res.send('message for post /');
-    // res.json(req.body);
-  var page = Page.build({
-    title: req.body.title,
-    content: req.body.content
-  });
 
-  // STUDENT ASSIGNMENT:
-  // make sure we only redirect *after* our save is complete!
-  // note: `.save` returns a promise or it can take a callback.
-  page.save()
-  .then(function (savedPage) {
-     res.redirect(savedPage.route);
+  User.findOrCreate({
+    where: {
+      name: req.body.name,
+      email: req.body.email
+    }
   })
-  .catch(function (err) {
-      if (err) throw err;
-  });
-  // -> after save -> res.redirect('/');
+  .then(function (values) {
+
+    var user = values[0];
+
+    var page = Page.build({
+      title: req.body.title,
+      content: req.body.content
+    });
+
+    return page.save().then(function (page) {
+      return page.setAuthor(user);
+    });
+
+  })
+  .then(function (page) {
+    res.redirect(page.route);
+  })
+  .catch(next);
+
 });
 
 router.get('/add', function(req, res, next){
@@ -43,18 +51,17 @@ router.get('/add', function(req, res, next){
 
 router.get('/:urlTitle', function (req, res, next) {
 
-  Page.findOne({ 
-    where: { 
-      urlTitle: req.params.urlTitle 
-    } 
+  Page.findOne({
+    where: {
+      urlTitle: req.params.urlTitle
+    },
+    include: [
+      {model: User, as: 'author'}
+    ]
   })
-  .then(function(foundPage){
-    res.render('wikipage',{
-        title: foundPage.title,
-        content: foundPage.content,
-        urlTitle: foundPage.urlTitle,
-        user: foundPage.User
-
+  .then(function(page){
+    res.render('wikipage', {
+        page: page
     });
   })
   .catch(next);
