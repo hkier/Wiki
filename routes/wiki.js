@@ -6,7 +6,13 @@ var User = models.User;
 
 router.get('/', function(req, res, next){
     // res.send('message for get /');
-    res.redirect('/');
+    Page.findAll()
+    .then(function(foundPage){
+        res.render('index',{
+           pages: foundPage
+    });
+  })
+  .catch(next);
 });
 
 router.post('/', function(req, res, next){
@@ -21,8 +27,8 @@ router.post('/', function(req, res, next){
   // make sure we only redirect *after* our save is complete!
   // note: `.save` returns a promise or it can take a callback.
   page.save()
-  .then(function () {
-      res.json(req.body);
+  .then(function (savedPage) {
+     res.redirect(savedPage.route);
   })
   .catch(function (err) {
       if (err) throw err;
