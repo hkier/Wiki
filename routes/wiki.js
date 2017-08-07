@@ -12,7 +12,6 @@ router.get('/', function(req, res, next){
 router.post('/', function(req, res, next){
     // res.send('message for post /');
     // res.json(req.body);
-
   var page = Page.build({
     title: req.body.title,
     content: req.body.content
@@ -34,6 +33,26 @@ router.post('/', function(req, res, next){
 router.get('/add', function(req, res, next){
     // res.send('message for get /add');
     res.render('addpage');
+});
+
+router.get('/:urlTitle', function (req, res, next) {
+
+  Page.findOne({ 
+    where: { 
+      urlTitle: req.params.urlTitle 
+    } 
+  })
+  .then(function(foundPage){
+    res.render('wikipage',{
+        title: foundPage.title,
+        content: foundPage.content,
+        urlTitle: foundPage.urlTitle,
+        user: foundPage.User
+
+    });
+  })
+  .catch(next);
+
 });
 
 module.exports = router;
