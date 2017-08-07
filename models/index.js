@@ -3,33 +3,71 @@ var db = new Sequelize('postgres://localhost:5432/wikistack', {
     logging: false
 });
 
+// function formatTitle (title){
+//     return title.split(' ').join('_');
+// }
+
+function generateUrlTitle (title) {
+    console.log('title: ',title);
+    console.log('type of: ', typeof title.replace);
+  if (title) {
+    // Removes all non-alphanumeric characters from title
+    // And make whitespace underscore
+    return title.replace(/\s+/g, '_').replace(/\W/g, '');
+  } else {
+    // Generates random 5 letter string
+    return Math.random().toString(36).substring(2, 7);
+  }
+}
 
 var Page = db.define('page', {
     title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
     },
     urlTitle: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        // allowNull: false
     },
     content: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull: false
     },
     status: {
         type: Sequelize.ENUM('open', 'closed')
+    },
+    date: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
+    }
+},
+{
+    getterMethods: {
+        route() {
+        return  '/wiki/' + this.urlTitle
+        }
+    },
+    hooks: {
+        beforeValidate: (page) => {
+            page.urlTitle = generateUrlTitle(page.title);
+        }
     }
 });
 
 var User = db.define('user', {
     name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
     },
     email: {
         type: Sequelize.STRING,
-        validate:{isEmail: true}
+        validate:{isEmail: true},
+        allowNull: false
     }
 });
 
 module.exports = {
   Page: Page,
-  User: User
+  User: User,
+  db: db
 };
